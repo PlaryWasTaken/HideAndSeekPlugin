@@ -1,0 +1,17 @@
+hidingTime: 60
+seekingTime: 300
+hiderGlowInterval: 20
+hiderGlowTime: 2
+mode: NORMAL # NORMAL or ZOMBIE
+
+seekersItems:
+  - material: DIAMOND_SWORD
+    name: "&cSeeker Sword"
+    enchants:
+      SHARPNESS: 200
+      UNBREAKING: 3
+    flags:
+      - HIDE_ENCHANTS
+  - material: COMPASS
+
+hiders-items: []

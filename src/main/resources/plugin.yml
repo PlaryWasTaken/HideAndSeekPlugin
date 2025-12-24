@@ -1,0 +1,4 @@
+name: hide
+version: '1.0-SNAPSHOT'
+main: org.plary.hide.Hide
+api-version: '1.21'
