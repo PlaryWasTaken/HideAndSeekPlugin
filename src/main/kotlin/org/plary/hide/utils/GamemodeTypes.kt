@@ -1,4 +1,4 @@
-package org.plary.hide
+package org.plary.hide.utils
 
 enum class GameModeType {
     Normal,

@@ -1,4 +1,4 @@
-package org.plary.hide
+package org.plary.hide.utils
 
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack
 object ItemBuilder {
 
     fun fromSection(section: ConfigurationSection): ItemStack {
-        val material = Material.valueOf(section.getString("material")!!)
+        val material = Material.valueOf(section.getString("material")!!.uppercase())
         val amount = section.getInt("amount", 1)
 
         val item = ItemStack(material, amount)

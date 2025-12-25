@@ -4,7 +4,7 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.plugin.java.JavaPlugin
 import org.plary.hide.commands.HideCommand
 
-class Hide : JavaPlugin() {
+class HideAndSeekPlugin : JavaPlugin() {
     var gameMaster = GameManager(this)
     override fun onEnable() {
         // Plugin startup logic
@@ -14,7 +14,6 @@ class Hide : JavaPlugin() {
                 "hidingTime" to 60,
                 "seekingTime" to 300,
                 "hiderGlowInterval" to 20,
-
                 "seekersItems" to listOf(
                     mapOf(
                         "material" to "netherite_sword",
@@ -26,7 +25,6 @@ class Hide : JavaPlugin() {
                         "unbreakable" to true
                     )
                 ),
-
                 "hidersItems" to listOf(
                     mapOf(
                         "material" to "stick",
@@ -41,6 +39,7 @@ class Hide : JavaPlugin() {
         )
         config.options().copyDefaults(true)
         saveConfig()
+
         this.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { commands ->
             commands.registrar().register(HideCommand().createCommand(this ).build())
         }

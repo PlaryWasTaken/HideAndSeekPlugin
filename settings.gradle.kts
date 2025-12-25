@@ -1,1 +1,1 @@
-rootProject.name = "HideAndSeekPlugin"
+rootProject.name = "HideAndSeek"

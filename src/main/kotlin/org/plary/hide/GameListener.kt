@@ -4,11 +4,13 @@ import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
+import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerRespawnEvent
+import org.plary.hide.utils.GameModeType
 
 class GameListener(
     private val gameManager: GameManager,
-    private val plugin: Hide
+    private val plugin: HideAndSeekPlugin
 ) : Listener {
 
     /**
@@ -22,6 +24,8 @@ class GameListener(
         if (!gameManager.isPlaying(victim)) return
         val killer = victim.killer
         // Should only remove when killed by a seeker
+        plugin.logger.info("Player ${victim.name} died. Killer: ${killer?.name ?: "None"}")
+        plugin.logger.info("Game mode: ${gameManager.mode}")
         when (gameManager.mode) {
             GameModeType.Normal -> {
                 if (killer != null && gameManager.isSeeker(killer)) {
@@ -38,8 +42,8 @@ class GameListener(
             }
             GameModeType.Tag -> {
                 if (killer != null && gameManager.isSeeker(killer)) {
-                    gameManager.setSeeker(victim)
                     gameManager.setHider(killer)
+                    gameManager.setSeeker(victim)
                 }
             }
         }
@@ -54,7 +58,7 @@ class GameListener(
 
         if (!gameManager.isPlaying(player)) return
 
-        // Run 1 tick later so inventory/meta is safe to modify
+        // Run 2 ticks later so inventory/meta is safe to modify
         Bukkit.getScheduler().runTaskLater(plugin, Runnable {
             when {
                 gameManager.isSeeker(player) -> {
@@ -62,9 +66,21 @@ class GameListener(
                 }
 
                 gameManager.isHider(player) -> {
-                    gameManager.restoreHider(player)
+                    gameManager.setHider(player)
                 }
             }
         }, 2L)
+    }
+    @EventHandler
+    fun onPlayerJoin(event: PlayerJoinEvent) {
+        val player = event.player
+
+        // If the game is ongoing, set as spectator
+        if (gameManager.ongoing) {
+            Bukkit.getScheduler().runTaskLater(plugin, Runnable {
+
+                gameManager.setHider(player)
+            }, 2L)
+        }
     }
 }

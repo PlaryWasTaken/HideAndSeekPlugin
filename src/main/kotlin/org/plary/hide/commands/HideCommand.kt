@@ -11,14 +11,14 @@ import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSele
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.entity.Player
-import org.plary.hide.GameModeType
-import org.plary.hide.Hide
+import org.plary.hide.utils.GameModeType
+import org.plary.hide.HideAndSeekPlugin
 import org.plary.hide.utils.EnumArgumentType
 
 
 class HideCommand {
 
-    fun createCommand(plugin: Hide): LiteralArgumentBuilder<CommandSourceStack> {
+    fun createCommand(plugin: HideAndSeekPlugin): LiteralArgumentBuilder<CommandSourceStack> {
         return Commands.literal("hide")
             .then(
                 Commands.literal("start")
@@ -75,7 +75,7 @@ class HideCommand {
                     )
             )
     }
-    private fun runStart(ctx: CommandContext<CommandSourceStack>, plugin: Hide): Int {
+    private fun runStart(ctx: CommandContext<CommandSourceStack>, plugin: HideAndSeekPlugin): Int {
         val sender = ctx.source.sender // Retrieve the command sender
         val executor = ctx.source.executor
 
@@ -89,13 +89,13 @@ class HideCommand {
 
         return Command.SINGLE_SUCCESS
     }
-    private fun runEndGame(ctx: CommandContext<CommandSourceStack>, plugin: Hide): Int {
+    private fun runEndGame(ctx: CommandContext<CommandSourceStack>, plugin: HideAndSeekPlugin): Int {
         val sender = ctx.source.sender
         sender.sendMessage(Component.text("Encerrando o jogo de esconde esconde..", NamedTextColor.RED))
         plugin.gameMaster.endGame()
         return Command.SINGLE_SUCCESS
     }
-    private fun configureSeekers(ctx: CommandContext<CommandSourceStack>, plugin: Hide): Int {
+    private fun configureSeekers(ctx: CommandContext<CommandSourceStack>, plugin: HideAndSeekPlugin): Int {
         val targetResolver = ctx.getArgument("procuradores", PlayerSelectorArgumentResolver::class.java)
         val targets = targetResolver.resolve(ctx.source)
         val sender = ctx.source.sender
@@ -104,17 +104,17 @@ class HideCommand {
             sender.sendMessage("Only players can start the game!")
             return Command.SINGLE_SUCCESS
         }
-        plugin.gameMaster.setInitialSeekers(targets)
+        plugin.gameMaster.initialSeekers.addAll(targets.map { it.uniqueId })
         sender.sendMessage(Component.text("Procuradores configurados com sucesso!"))
         return Command.SINGLE_SUCCESS
     }
-    private fun setMode(ctx: CommandContext<CommandSourceStack>, plugin: Hide): Int {
+    private fun setMode(ctx: CommandContext<CommandSourceStack>, plugin: HideAndSeekPlugin): Int {
         val sender = ctx.source.sender
         sender.sendMessage(Component.text("Modo de jogo alterado para ${ctx.getArgument("modo", GameModeType::class.java)}"))
         plugin.config.set("mode", ctx.getArgument("modo", GameModeType::class.java).toString())
         return Command.SINGLE_SUCCESS
     }
-    private fun setConfigInt(argName: String, configName: String, ctx: CommandContext<CommandSourceStack>, plugin: Hide): Int {
+    private fun setConfigInt(argName: String, configName: String, ctx: CommandContext<CommandSourceStack>, plugin: HideAndSeekPlugin): Int {
         val sender = ctx.source.sender
         val value = ctx.getArgument(argName, Integer::class.java)
         if (value > 99999) {

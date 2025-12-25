@@ -27,27 +27,30 @@ class ScoreboardManager {
 
     val seekersTeam: Team = board.registerNewTeam("seekers").apply {
         color(NamedTextColor.RED)
-        setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER)
+        setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.ALWAYS)
         setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.ALWAYS)
+        setAllowFriendlyFire(false)
     }
 
     val hidersTeam: Team = board.registerNewTeam("hiders").apply {
         color(NamedTextColor.GREEN)
         setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER)
-        setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OWN_TEAM)
+        setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER)
+        setAllowFriendlyFire(false)
     }
 
     val spectatorsTeam: Team = board.registerNewTeam("spectators").apply {
         color(NamedTextColor.GRAY)
         setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER)
         setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER)
+        setAllowFriendlyFire(false)
     }
 
-    fun update(time: Int, seeking: Boolean, hiders: Int, seekers: Int, plugin: Hide) {
+    fun update(time: Int, seeking: Boolean, hiders: Int, seekers: Int, plugin: HideAndSeekPlugin) {
         board.entries.forEach { board.resetScores(it) }
 
         objective.getScore(
-            "§bTempo: §e${if (seeking) "Procurando" else "Escondendo"}: $time"
+            "§bTempo: §e${if (seeking) "Procurando" else "Escondendo"}: ${(time/60).toString().padStart(2, '0')}:${(time%60).toString().padStart(2, '0')}"
         ).score = 4
 
         objective.getScore("§aEscondendo: $hiders").score = 3
@@ -55,7 +58,6 @@ class ScoreboardManager {
         objective.getScore(
             "§fModo: ${plugin.config.getString("mode", "Normal")}"
         ).score = 1
-        //Bukkit.getOnlinePlayers().forEach { it.scoreboard = board }
     }
 
     fun end(winners: List<Player>) {
