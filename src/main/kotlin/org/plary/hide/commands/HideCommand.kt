@@ -104,6 +104,7 @@ class HideCommand {
             sender.sendMessage("Only players can start the game!")
             return Command.SINGLE_SUCCESS
         }
+        plugin.gameMaster.initialSeekers.clear()
         plugin.gameMaster.initialSeekers.addAll(targets.map { it.uniqueId })
         sender.sendMessage(Component.text("Procuradores configurados com sucesso!"))
         return Command.SINGLE_SUCCESS

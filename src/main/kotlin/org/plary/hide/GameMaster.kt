@@ -41,6 +41,8 @@ class GameManager(private val plugin: HideAndSeekPlugin) {
     fun startGame() {
         val players = Bukkit.getOnlinePlayers().iterator()
         mode = GameModeType.valueOf(plugin.config.getString("mode", "Normal")!!)
+        hiders.clear()
+        seekers.clear()
         // ** Player setup **
         players.forEachRemaining {
             it.gameMode = GameMode.ADVENTURE
@@ -72,7 +74,7 @@ class GameManager(private val plugin: HideAndSeekPlugin) {
         player.addPotionEffect(
             PotionEffect(PotionEffectType.STRENGTH, PotionEffect.INFINITE_DURATION, 30, false, false)
         )
-        if (!seekingPhase) {
+        if (!seekingPhase && mode != GameModeType.Tag) {
             player.addPotionEffect(
                 PotionEffect(PotionEffectType.BLINDNESS, plugin.config.getInt("hidingTime") * 20, 5, false, false)
             )
@@ -165,7 +167,7 @@ class GameManager(private val plugin: HideAndSeekPlugin) {
     }
     private fun startHiderGlowTask(): BukkitTask {
         val interval = plugin.config.getInt("hiderGlowInterval") * 20L
-        val glowTime = plugin.config.getInt("hiderGlowTime") * 20
+        val glowTime = plugin.config.getInt("hiderGlowTime")
         return object : BukkitRunnable() {
             override fun run() {
                 if (!ongoing) return cancel()
@@ -173,7 +175,7 @@ class GameManager(private val plugin: HideAndSeekPlugin) {
                 if (!seekingPhase) return
                 hiders.mapNotNull { Bukkit.getPlayer(it) }.forEach {
                     it.addPotionEffect(
-                        PotionEffect(PotionEffectType.GLOWING,  glowTime, 200, false, false)
+                        PotionEffect(PotionEffectType.GLOWING,  glowTime * 20, 200, false, false)
                     )
                     it.sendActionBar(Component.text("Você está GLOWER por $glowTime segundo(s)!", NamedTextColor.BLUE))
                 }

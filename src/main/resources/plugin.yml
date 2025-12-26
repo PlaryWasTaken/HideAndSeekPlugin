@@ -1,4 +1,4 @@
 name: hide
 version: '1.0-SNAPSHOT'
-main: org.plary.hide.Hide
+main: org.plary.hide.HideAndSeekPlugin
 api-version: '1.21'
