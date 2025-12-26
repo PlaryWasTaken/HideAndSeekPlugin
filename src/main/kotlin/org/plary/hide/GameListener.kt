@@ -3,6 +3,7 @@ package org.plary.hide
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerRespawnEvent
@@ -82,5 +83,23 @@ class GameListener(
                 gameManager.setHider(player)
             }, 2L)
         }
+    }
+    @EventHandler
+    fun onEntityHit(event: EntityDamageByEntityEvent) {
+        val damager = event.damager
+        val victim = event.entity
+
+        if (damager !is org.bukkit.entity.Player || victim !is org.bukkit.entity.Player) return
+
+        // Only seekers can damage hiders
+        if (gameManager.ongoing && gameManager.mode == GameModeType.Tag) {
+            if (gameManager.isSeeker(damager) && gameManager.isHider(victim)) {
+                gameManager.setSeeker(victim)
+                gameManager.setHider(damager)
+                event.damage = 0.0
+            }
+            return
+        }
+
     }
 }
